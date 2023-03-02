@@ -3,7 +3,7 @@
     <div class="addLoad-container" @click.stop>
 
       <div class="header">
-        <h1>Change Load Schedule {{load.id}}</h1>
+        <h1>Change <span class="load-name">{{load.loadName}}</span> Schedule </h1>
 
       </div>
       <form @submit.prevent>
@@ -12,7 +12,7 @@
             <button v-for="day in days" :key="day" @click="selectedDay = day" :class="{ 'weekdays__day--active': day === selectedDay }">{{ day }}</button>
           </div>
 <!--          v-for="day in days" :key="day" v-show="day === selectedDay"-->
-          <div :v-show="selectedDay!==''">
+          <div v-show="selectedDay!==''">
 
 
 
@@ -124,7 +124,7 @@ export default {
   margin-bottom: 20px;
   border: none;
   border-radius: 5px;
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   font-size: 16px;
   color: #333;
 }
@@ -162,5 +162,9 @@ export default {
 
 .weekdays button:hover:not(.weekdays__day--active) {
   background-color: #ddd;
+}
+.load-name{
+  color: cornflowerblue;
+  font-weight: bold;
 }
 </style>

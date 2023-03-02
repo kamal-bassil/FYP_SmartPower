@@ -3,14 +3,14 @@
     <h1 > Loads dashboard </h1>
   </div>
   <button :class="{'edit-btn':!edit, 'stop-edit':edit}" @click="editClick">{{ edit? 'Finish':'Edit' }}</button>
-  <AddLoadComponent v-if="addLoadPage" @externalDivClick="exitAddLoadPage"/>
+  <AddLoadComponent v-if="addLoadPage" @externalDivClick="exitAddLoadPage" @addLoad="addNewLoad"/>
 
   <div :key="load.id" v-for="load in loads">
     <LoadComponent :load="load" :displayDelete="edit" @change-schedule="editSchedule" @delete-load="deleteLoad"/>
   </div>
   <button class="edit-btn" @click="enterAddLoadPage" v-if="edit">Add Load</button>
 
-  <changeSchedule v-if="loadID!==0"  @schedule-submitted="handleScheduleSubmitted" :load="loads[loadID-1]" v-show="loadID!==0" @externalDivClick="exitAddLoadPage"/>
+  <changeSchedule v-if="loadID!==0"  @schedule-submitted="handleScheduleSubmitted" :load="loads.find(obj => obj.id===loadID)" v-show="loadID!==0" @externalDivClick="exitAddLoadPage"/>
 </template>
 
 <script>
@@ -62,7 +62,11 @@ export default {
     },
     deleteLoad(ID){
       this.$emit('delete-load', ID)
-    }
+    },
+    addNewLoad(load){
+    this.$emit('addNewLoad', load)
+    },
+
   },
 
 }
@@ -86,7 +90,7 @@ export default {
   display: inline-block;
   font-size: 12px;
   border-radius: 25px;
-  box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease 0s;
 
 }
@@ -100,7 +104,7 @@ export default {
   display: inline-block;
   font-size: 12px;
   border-radius: 25px;
-  box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease 0s;
 }
 </style>

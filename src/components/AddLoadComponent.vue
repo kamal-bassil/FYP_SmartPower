@@ -10,7 +10,7 @@
       <form class="form-container" @submit.prevent>
         <div class="form-input">
           <label for="ip-address">IP Address</label>
-          <input type="text" id="ip-address" v-model="ipAddress" required pattern="\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}" placeholder="e.g., 192.168.1.10">
+          <input type="text" id="ip-address" v-model="ipAddress" required pattern="\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}" placeholder="e.g., 192.168.1.34">
         </div>
 
         <div class="form-input">
@@ -20,7 +20,7 @@
 
         <div class="form-input">
           <label for="load-priority">Load priority:</label>
-          <select id="load-priority" v-model="selectedPriority">
+          <select id="load-priority" v-model="priority">
             <option value="1">Priority 1</option>
             <option value="2">Priority 2</option>
             <option value="3">Priority 3</option>
@@ -28,8 +28,8 @@
         </div>
 
         <div class="form-input">
-          <label for="power-usage">Power Usage</label>
-          <input type="number" id="power-usage" v-model="powerUsage" required>
+          <label for="power-usage">Power Usage (W)</label>
+          <input type="number" id="power-usage" v-model="powerRequirement" required>
         </div>
 
 
@@ -42,11 +42,11 @@
             <h2>{{ day }}</h2>
             <div>
               <label for="start-time">Start time:</label>
-              <input type="time" id="start-time" v-model="times[day].start">
+              <input type="time" id="start-time" v-model="schedule[day].start">
             </div>
             <div>
               <label for="end-time">End time:</label>
-              <input type="time" id="end-time" v-model="times[day].end">
+              <input type="time" id="end-time" v-model="schedule[day].end">
             </div>
           </div>
         </div>
@@ -65,14 +65,12 @@
 export default {
   data(){
     return{
+      id: Math.floor(Math.random() * 1000000) + 1,
       ipAddress: '',
       loadName: '',
-      powerUsage: null,
-      timeRequirement: '',
-      selectedPriority: null,
-      days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
-      selectedDay: null,
-      times: {
+      powerRequirement: null,
+      priority: null,
+      schedule: {
         Sunday: { start: '', end: '' },
         Monday: { start: '', end: '' },
         Tuesday: { start: '', end: '' },
@@ -80,23 +78,36 @@ export default {
         Thursday: { start: '', end: '' },
         Friday: { start: '', end: '' },
         Saturday: { start: '', end: '' }
-      }
+      },
 
+      days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+      selectedDay: null,
     }
   },
   name: "AddLoadComponent",
   methods: {
     handleClick() {
       console.log('Button clicked');
-      console.log(this.times.Monday.start, typeof this.times.Monday.start);
-
+      console.log(this.schedule.Monday.start, typeof this.schedule.Monday.start);
+      let newLoad = {
+        id: this.id,
+        ipAddress: this.ipAddress,
+        loadName: this.loadName,
+        powerRequirement: this.powerRequirement,
+        priority: this.priority,
+        state: false,
+        schedule: this.schedule
+      }
+      this.$emit('addLoad', newLoad)
+      this.$emit('externalDivClick')
       // Add your custom logic here
+
     },
 
   },
   computed:{
     isFormReady() {
-      return  (this.ipAddress!='') && (this.loadName!='')   && (this.powerUsage!=null) && (this.selectedPriority!=null)
+      return  (this.ipAddress!=='') && (this.loadName!=='')   && (this.powerRequirement!==null) && (this.priority!==null)
     }
   }
 
@@ -132,7 +143,7 @@ export default {
   padding: 20px;
   background-color: #f2f2f2;
   border-radius: 5px;
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 
@@ -144,19 +155,11 @@ export default {
   margin-bottom: 20px;
   border: none;
   border-radius: 5px;
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   font-size: 16px;
   color: #333;
 }
 
-
-/* Style for radio button container */
-.radio-container {
-  display: flex;
-  justify-content: space-between;
-
-  margin-bottom: 20px;
-}
 
 /* Style for submit button */
 .submit-button {
