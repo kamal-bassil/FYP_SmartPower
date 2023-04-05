@@ -53,6 +53,10 @@ export default {
       // console.log(ID)
       // this.$emit('change-schedule', ID)
       this.loadID=ID
+
+      //here I want to request for the load timeLine
+
+
     },
     handleScheduleSubmitted(userSchedule, load){
       // console.log(userSchedule)

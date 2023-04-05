@@ -7,7 +7,7 @@
         <EnergySourcesDashboard :energySources="energySources" />
       </div>
       <div class="loadsContainer">
-        <loadsDashboard :loads="loads" @editClick="this.edit=!this.edit" @load-change-schedule="handleScheduleSubmitted" @delete-load="deleteLoad" @addNewLoad="addNewLoad"/>
+        <loadsDashboard :loads="loads" @editClick="editClick" @load-change-schedule="handleScheduleSubmitted" @delete-load="deleteLoad" @addNewLoad="addNewLoad"/>
       </div>
     </div>
 
@@ -18,7 +18,7 @@
 <script>
   import LoadsDashboard from '../components/LoadsDashboard';
   import EnergySourcesDashboard from '../components/EnergySourcesDashboard';
-
+  // import axios from 'axios';
   export default{
     name: 'MainPage',
     components:{
@@ -34,134 +34,177 @@
       }
     },
     created(){
-      this.energySources=[{
-        id: 1,
-        ipAddress:'192.168.1.10',
-        sourceName: 'Battery',
-        available:true,
-        state:true,
-        charge:82
-      },
-        {
-          id: 2,
-          ipAddress:'192.168.1.11',
-          sourceName: 'Solar',
-          available:true,
-          state:true,
-        },
-        {
-          id: 3,
-          ipAddress:'192.168.1.12',
-          sourceName: 'EDL',
-          available:true,
-          state:false
-        },
-        {
-          id: 4,
-          ipAddress:'192.168.1.13',
-          sourceName: 'Subscription generator',
-          available:false,
-          state:false
-        }
-      ];
-      this.loads=[
-          {
-        id:1,
-            ipAddress:'192.168.1.31',
-        loadName:'Car',
-        powerRequirement:3000,
-        priority:1,
-        state: true,
-        schedule:{
+      this.fetchSources()
+      this.fetchLoads()
+      this.energySources=[]
+      this.loads=[];
+      this.fetchSources();
+      this.fetchLoads();
 
-          Monday: { start: '12:00', end: '14:00' },
-          Tuesday: { start: '', end: '' },
-          Wednesday: { start: '', end: '' },
-          Thursday: { start: '12:00', end: '14:00' },
-          Friday: { start: '', end: '' },
-          Saturday: { start: '', end: '' },
-          Sunday: { start: '', end: '' },
-        }
-      },
-        {
-          id:2,
-          ipAddress:'192.168.1.32',
-          loadName:'Hot water',
-          powerRequirement:4000,
-          priority:1,
-          state:false,
-          scheduled: new Date(2022,10,18,14,0,0,0),
-          schedule:{
 
-            Monday: { start: '', end: '' },
-            Tuesday: { start: '', end: '' },
-            Wednesday: { start: '', end: '' },
-            Thursday: { start: '', end: '' },
-            Friday: { start: '', end: '' },
-            Saturday: { start: '', end: '' },
-            Sunday: { start: '', end: '' },
-          }
-        },
-        {
-          id:3,
-          ipAddress:'192.168.1.33',
-          loadName:'AC',
-          powerRequirement:3500,
-          priority:2,
-          state:true,
-          schedule:{
-
-            Monday: { start: '', end: '' },
-            Tuesday: { start: '', end: '' },
-            Wednesday: { start: '', end: '' },
-            Thursday: { start: '', end: '' },
-            Friday: { start: '', end: '' },
-            Saturday: { start: '', end: '' },
-            Sunday: { start: '', end: '' },
-          }
-        },
-        {
-          id:4,
-          ipAddress:'192.168.1.34',
-          loadName:'Laundry',
-          powerRequirement:500,
-          priority:3,
-          state:false,
-          schedule:{
-
-            Monday: { start: '', end: '' },
-            Tuesday: { start: '', end: '' },
-            Wednesday: { start: '', end: '' },
-            Thursday: { start: '', end: '' },
-            Friday: { start: '', end: '' },
-            Saturday: { start: '', end: '' },
-            Sunday: { start: '', end: '' },
-          }
-        },
-      ];
     },
     methods:{
       goToSettings(){
         this.$router.push("/settingspage");
       },
+      editClick(){
+        this.edit =!this.edit
+      },
       handleScheduleSubmitted(userSchedule, load){
-        console.log(userSchedule)
+        console.log(userSchedule.Monday.Start, load.id)
         console.log(load.loadName)
-        let loadIndex;
-        loadIndex = this.loads.findIndex(item => item.id === load.id)
-        this.loads.splice(loadIndex, 1, load)
+
+        const url = 'http://localhost:5000/adduserrule';
+        const data = {ID: load.id, Schedule: userSchedule};
+        console.log(data)
+
+        fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
+        })
+            .then(response => response.json())
+            .then(data => {
+              console.log('Success:', data);
+              this.fetchLoads();
+            })
+            .catch((error) => {
+              console.error('Error in post:', error);
+            });
+
+
+
+        // let loadIndex;
+        // loadIndex = this.loads.findIndex(item => item.id === load.id)
+        // this.loads.splice(loadIndex, 1, load)
       },
-      deleteLoad(ID){
-        let indexToDelete;
-        indexToDelete = this.loads.findIndex(obj => obj.id === ID);
-        if (indexToDelete !== -1) {
-          this.loads.splice(indexToDelete, 1);
-        }
-      },
+      deleteLoad(Identity){
+        console.log(Identity)
+        const url = 'http://localhost:5000/loads/remove';
+        const data = {ID: Identity};
+        fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
+        })
+            .then(response => response.json())
+            .then(data => {
+              console.log('Success:', data);
+              this.fetchLoads();
+            })
+            .catch((error) => {
+              console.error('Error in post:', error);
+            });
+        },
       addNewLoad(load){
-        this.loads.push(load)
-      }
+
+        console.log(load.priority)
+        const url = 'http://localhost:5000/loads/add';
+        const data = {IP: load.ipAddress , Name: load.loadName , Type: load.loadType, Priority: load.priority, Power: load.powerRequirement};
+        // const data = "IP: " + load.ipAddress + ", Name: " +  load.loadName + ", Type: " + load.loadType;
+        console.log(data)
+
+        fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
+        })
+            .then(response => response.json())
+            .then(data => {
+              console.log('Success:', data);
+              this.fetchLoads();
+            }).then(data => {
+          console.log('Success:', data);
+          this.handleScheduleSubmitted(load.userSchedule, this.loads[this.loads.length - 1]);
+        })
+            .catch((error) => {
+              console.error('Error in post:', error);
+            });
+
+        console.log(load)
+        console.log(load.loadType)
+        console.log(load.userSchedule.Monday.Start)
+      },
+
+
+      async fetchSources(){
+        const response = await fetch('http://localhost:5000/sources');
+        const data = await response.json();
+        this.energySources=[];
+        let obj;
+        for (let i = 0; i < data.length; i++) {
+
+          obj={
+              id: '1',
+              ipAddress:'192.168.1.10',
+              sourceName: 'Battery',
+              available:true,
+              charge:82
+
+          };
+          this.backToFrontSource(data[i], obj);
+          this.energySources.push(obj)
+
+        }
+
+
+      },
+      backToFrontSource(backendSource, frontEndSource){
+        frontEndSource.sourceName = backendSource.Name;
+        frontEndSource.id = backendSource.ID
+        // frontEndSource.na = backendSource.Type
+        frontEndSource.available = backendSource.CurrentStatus==2?true:false;
+
+      },
+      async fetchLoads(){
+        const response = await fetch('http://localhost:5000/loads');
+        const data = await response.json();
+        console.log("I am fetching the loads: ", data)
+        this.loads=[]
+        var obj
+        for (let i = 0; i < data.length; i++) {
+          obj={
+              id:1,
+                  ipAddress:'192.168.1.31',
+                  loadName:'Car',
+                  powerRequirement:3000,
+                  priority:1,
+                  state: true,
+                  userSchedule:{
+
+                    Monday: { Start: '', End: '' },
+                    Tuesday: { Start: '', End: '' },
+                    Wednesday: { Start: '', End: '' },
+                    Thursday: { Start: '', End: '' },
+                    Friday: { Start: '', End: '' },
+                    Saturday: { Start: '', End: '' },
+                    Sunday: { Start: '', End: '' },
+              }
+
+            };
+          this.backToFrontLoad(data[i], obj);
+          this.loads.push(obj)
+
+        }
+
+      },
+      backToFrontLoad(backendLoad, frontendLoad){
+        frontendLoad.loadName=backendLoad.Name;
+        frontendLoad.id=backendLoad.ID;
+        frontendLoad.powerRequirement=backendLoad.Rating.SteadyStatePower;
+        // console.log(frontendLoad.powerRequirement)
+        frontendLoad.state=backendLoad.CurrentStatus==1?true:false;
+        console.log(frontendLoad.state)
+
+      },
     },
+
   }
 </script>
 
@@ -198,3 +241,6 @@ h1 {
 }
 
 </style>
+
+
+//name IP type

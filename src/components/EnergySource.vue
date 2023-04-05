@@ -4,7 +4,7 @@
       <h3>{{source.sourceName}}</h3>
     </div>
     <div class="disc">
-      <h3>state: {{source.state? 'ON' : 'OFF'}}</h3>
+      <h3>State: {{source.available? 'ON' : 'OFF'}}</h3>
     </div>
     <div class="disc">
       <h3>{{source.sourceName==='Battery' ? ('charge: ' + source.charge + '%') : ''}}</h3>

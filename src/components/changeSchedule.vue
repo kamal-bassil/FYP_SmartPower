@@ -19,12 +19,12 @@
             <div v-for="day in days" :key="day" v-show="day === selectedDay">
               <h2>{{ day }}</h2>
               <div>
-                <label for="start-time">Start time:</label>
-                <input type="time" id="start-time" v-model="userSchedule[day].start">
+                <label for="Start-time">Start time:</label>
+                <input type="time" id="Start-time" v-model="userSchedule[day].Start">
               </div>
               <div>
-                <label for="end-time">End time:</label>
-                <input type="time" id="end-time" v-model="userSchedule[day].end">
+                <label for="End-time">End time:</label>
+                <input type="time" id="End-time" v-model="userSchedule[day].End">
               </div>
             </div>
 
@@ -57,13 +57,13 @@ export default {
       days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
       selectedDay: '',
       userSchedule: {
-        Monday: { start: '', end: '' },
-        Tuesday: { start: '', end: '' },
-        Wednesday: { start: '', end: '' },
-        Thursday: { start: '', end: '' },
-        Friday: { start: '', end: '' },
-        Saturday: { start: '', end: '' },
-        Sunday: { start: '', end: '' },
+        Monday: { Start: '', End: '' },
+        Tuesday: { Start: '', End: '' },
+        Wednesday: { Start: '', End: '' },
+        Thursday: { Start: '', End: '' },
+        Friday: { Start: '', End: '' },
+        Saturday: { Start: '', End: '' },
+        Sunday: { Start: '', End: '' },
       }
 
     }
@@ -85,7 +85,7 @@ export default {
 
   },
   created(){
-    this.userSchedule=this.load.schedule
+    this.userSchedule=this.load.userSchedule
 
   }
 

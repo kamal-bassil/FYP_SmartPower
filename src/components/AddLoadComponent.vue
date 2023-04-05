@@ -32,6 +32,16 @@
           <input type="number" id="power-usage" v-model="powerRequirement" required>
         </div>
 
+        <div class="form-input">
+          <label for="loadType">Select your load type:</label>
+          <select id="loadType" v-model="loadType" class="form-control">
+            <option value="1">Heater</option>
+            <option value="2">Water Heater</option>
+            <option value="3">AC</option>
+            <option value="4">Electric Car</option>
+          </select>
+        </div>
+
 
         <div class="form-input">
           <label for="expected-time-on">Expected Time On</label>
@@ -42,11 +52,11 @@
             <h2>{{ day }}</h2>
             <div>
               <label for="start-time">Start time:</label>
-              <input type="time" id="start-time" v-model="schedule[day].start">
+              <input type="time" id="start-time" v-model="userSchedule[day].Start">
             </div>
             <div>
               <label for="end-time">End time:</label>
-              <input type="time" id="end-time" v-model="schedule[day].end">
+              <input type="time" id="end-time" v-model="userSchedule[day].End">
             </div>
           </div>
         </div>
@@ -65,19 +75,19 @@
 export default {
   data(){
     return{
-      id: Math.floor(Math.random() * 1000000) + 1,
       ipAddress: '',
       loadName: '',
+      loadType: 0,
       powerRequirement: null,
       priority: null,
-      schedule: {
-        Sunday: { start: '', end: '' },
-        Monday: { start: '', end: '' },
-        Tuesday: { start: '', end: '' },
-        Wednesday: { start: '', end: '' },
-        Thursday: { start: '', end: '' },
-        Friday: { start: '', end: '' },
-        Saturday: { start: '', end: '' }
+      userSchedule: {
+        Monday: { Start: '', End: '' },
+        Tuesday: { Start: '', End: '' },
+        Wednesday: { Start: '', End: '' },
+        Thursday: { Start: '', End: '' },
+        Friday: { Start: '', End: '' },
+        Saturday: { Start: '', End: '' },
+        Sunday: { Start: '', End: '' },
       },
 
       days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
@@ -88,15 +98,16 @@ export default {
   methods: {
     handleClick() {
       console.log('Button clicked');
-      console.log(this.schedule.Monday.start, typeof this.schedule.Monday.start);
+      console.log(this.userSchedule.Monday.Start, typeof this.userSchedule.Monday.Start);
       let newLoad = {
-        id: this.id,
+        id: null,
         ipAddress: this.ipAddress,
         loadName: this.loadName,
         powerRequirement: this.powerRequirement,
         priority: this.priority,
         state: false,
-        schedule: this.schedule
+        userSchedule: this.userSchedule,
+        loadType: this.loadType
       }
       this.$emit('addLoad', newLoad)
       this.$emit('externalDivClick')
@@ -107,7 +118,7 @@ export default {
   },
   computed:{
     isFormReady() {
-      return  (this.ipAddress!=='') && (this.loadName!=='')   && (this.powerRequirement!==null) && (this.priority!==null)
+      return  (this.ipAddress!=='') && (this.loadName!=='')   && (this.powerRequirement!==null) && (this.priority!==null) && (this.loadType!==0)
     }
   }
 

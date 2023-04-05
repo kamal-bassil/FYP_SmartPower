@@ -4,8 +4,8 @@
       <h3>{{load.loadName}}</h3>
     </div>
     <div class="disc" >
-      <p> Expected start: {{load.schedule["Thursday"].start}}</p>
-      <p>Expected finish: {{load.schedule["Thursday"].end}}</p>
+      <p>Expected start: {{load.userSchedule.Thursday.Start}}</p>
+      <p>Expected finish: {{load.userSchedule.Thursday.End}}</p>
       <button class="edit-btn" @click="changeSchedule" v-show="displayDelete">Change Schedule</button>
     </div>
     <div class="disc">
@@ -41,6 +41,7 @@ export default {
   methods:{
     deleteLoad(){
       console.log(this.load.loadName, 'wants to be deleted')
+      console.log(this.load.id, 'wants to be deleted')
       if (window.confirm('Are you sure you want to delete this load?')) {
         // User clicked OK, proceed with delete operation
         this.$emit('delete-load', this.load.id)
